@@ -452,8 +452,8 @@ void InitGr(unsigned char addr)
             
         case PIC_16F15224:
             flag_344=1;
-			SetVdd3v=false;
-			SetVdd5v=true;
+			SetVdd3v=true;
+			SetVdd5v=false;
 			MaxMemory=MaxMemory344;
 			DelayTera = TERA_344;
 			DelayTprogMem = TPROG_MEM_344;
@@ -466,8 +466,8 @@ void InitGr(unsigned char addr)
             
         case PIC_16F15344:
             flag_344=1;
-			SetVdd3v=false;
-			SetVdd5v=true;
+			SetVdd3v=true;
+			SetVdd5v=false;
 			MaxMemory=MaxMemory344;
 			DelayTera = TERA_344;
 			DelayTprogMem = TPROG_MEM_344;

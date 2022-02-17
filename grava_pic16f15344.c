@@ -333,59 +333,8 @@ void p16c_set_pc (unsigned long pc)
   NoP();
   NoP();
   
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  
-
-  
   isp_send_24_msb(pc); 
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
+ 
 
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -397,7 +346,7 @@ void p16c_bulk_erase (void)
   delay_50us(150);//100
   }else
   {
-  delay_50us(100);
+  delay_50us(150);//100
   }
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -478,56 +427,8 @@ unsigned int p16c_read_data_nvm (unsigned char inc)
 void p16c_begin_prog (unsigned char cfg_bit)
 {
   isp_send_8_msb(0xE0);
-   NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-   NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-   NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  NoP();
-  ////delay_50us(60);  //60  10
-  //if (cfg_bit!=0) delay_50us(60); //60
+  delay_50us(55);  //60  10
+  if (cfg_bit!=0) delay_50us(55); //60
   }
 ////////////////////////////////////////////////////////////////////////////////
 unsigned int p16c_get_ID (void)
@@ -654,15 +555,15 @@ void MontaProg344_1(void)
 		ByteCount -= 2;
 		i+=2;
 		AddrProg++;
-//if(AddrProg>=0x670)//0x07e0)
-//{
-//NoP();
-//NoP();
-//NoP();
-//NoP();
-//NoP();
-//NoP();
-//}
+if(AddrProg>=0x670)//0x07e0)
+{
+NoP();
+NoP();
+NoP();
+NoP();
+NoP();
+NoP();
+}
 		if((AddrProg&0x07ff)==0x0000) //indice igual a 0x0800
 			{
 			ProgWord344_1();
@@ -679,21 +580,28 @@ void ProgWord344_1(void)
 	unsigned int indice=0,maxdata;
     ////uint16_t seta_pc=0;
 	Programado=true;
-    ////p16c_set_pc(0x0000);//
+    p16c_set_pc(0x0000);//
+    delay_50us(40);
 	maxdata=AddrProg-1;
 	if(maxdata>0x7ff)
 		maxdata=maxdata-0x7ff;
 	while((indice<=maxdata)&&BlockCount)
 	{
-		wordCount=32;
+		wordCount=32;//32
 		while(wordCount)
 		{
-			if(WordProg[indice]!=0x3fff)
-                p16c_load_nvm (0,WordProg[indice]);
+//			if(WordProg[indice]!=0x3fff)
+//                p16c_load_nvm (0,WordProg[indice]);
 				//SendCommand_344(LOAD_DATA_PROG_MEM_344,WordProg[indice]);	// envia word
 			wordCount--;
 			if(wordCount)
-                isp_inc_pointer();
+            {
+                p16c_load_nvm (1,WordProg[indice]);  
+            }else
+            {
+                p16c_load_nvm (0,WordProg[indice]);  
+            }
+                ////isp_inc_pointer();
 				//SendCommand_344(INCREMENT_ADDRESS_344,0);				// incrementa PC
                 
 			indice++;
@@ -784,43 +692,31 @@ void ProgConfigMem344_1(void)
 {
 	volatile unsigned int datateste, datarec;
 	//// britto SendCommand(LOAD_CONFIGURATION,0);			// PC > 0x8000
-//    isp_inc_pointer();
-//    isp_inc_pointer();
-//    isp_inc_pointer();
-//    isp_inc_pointer();
-//    isp_inc_pointer();
-//    isp_inc_pointer();
-//    isp_inc_pointer();
+
     p16c_set_pc(0x8007);
-//	SendCommand_344(INCREMENT_ADDRESS_344,0);			// incrementa PC > 0x8001
-//	SendCommand_344(INCREMENT_ADDRESS_344,0);			// incrementa PC > 0x8002
-//	SendCommand_344(INCREMENT_ADDRESS_344,0);			// incrementa PC > 0x8003
-//	SendCommand_344(INCREMENT_ADDRESS_344,0);			// incrementa PC > 0x8004
-//	SendCommand_344(INCREMENT_ADDRESS_344,0);			// incrementa PC > 0x8005
-//	SendCommand_344(INCREMENT_ADDRESS_344,0);			// incrementa PC > 0x8006
-//	SendCommand_344(INCREMENT_ADDRESS_344,0);			// incrementa PC > 0x8007
+
 	datateste=(unsigned int)DataHex[1];
 	datateste=((datateste<<8)|(unsigned int)DataHex[0]);
 	datateste=datateste&0x3fff;
 	//SendCommand_344(LOAD_DATA_PROG_MEM_344,datateste);	// primeira word
     p16c_load_nvm (0 ,datateste);
 	//SendCommand_344(BEGIN_PROGRAMMING_344,0);			// grava word de configuração 1
-    p16c_begin_prog(0);
-	delay_50us(20);//10);
+    p16c_begin_prog(1);
+    delay_50us(20);//10);
 	datarec=p16c_read_data_nvm(0);//SendCommand_344(READ_DATA_PROG_MEM_344,0);
    
 	if(datateste!=datarec)
 		StatusGr=0xf4;							// Erro de gravação
     isp_inc_pointer();
 	//SendCommand_344(INCREMENT_ADDRESS_344,0);			// incrementa PC > 0x8008
-	datateste=(unsigned int)DataHex[3];					/****** ????? ******/
-	datateste=((datateste<<8)|(unsigned int)DataHex[2]);/****** ????? ******/
+	datateste=0x3f;//(unsigned int)DataHex[3];					/****** ????? ******/
+	datateste=((datateste<<8)|0xe6);/****** ????? ******///((datateste<<8)|(unsigned int)DataHex[2])
 	datateste=datateste&0x3fff;
-	datateste=datateste|0x08fc;
+	////datateste=datateste|0x08fc;
     p16c_load_nvm (0 , datateste);
 	//SendCommand_344(LOAD_DATA_PROG_MEM_344,datateste);	// segunda word
 	//SendCommand_344(BEGIN_PROGRAMMING_344,0);			// grava word de configuração 2
-    p16c_begin_prog(0);
+    p16c_begin_prog(1);
 	delay_50us(20);//10);
 	datarec= p16c_read_data_nvm(0);//SendCommand_344(READ_DATA_PROG_MEM_344,0);
 	if(datateste!=datarec)
@@ -833,11 +729,11 @@ void ProgConfigMem344_1(void)
 	datateste=(unsigned int)DataHex[5];					/****** ????? ******/
 	datateste=((datateste<<8)|(unsigned int)DataHex[4]);/****** ????? ******/
 	datateste=datateste&0x3fff;
-	datateste=datateste|0x08fc;
+	////datateste=datateste|0x08fc;
     p16c_load_nvm (0 , datateste);
 	//SendCommand_344(LOAD_DATA_PROG_MEM_344,datateste);	// segunda word
 	//SendCommand_344(BEGIN_PROGRAMMING_344,0);			// grava word de configuração 2
-    p16c_begin_prog(0);
+    p16c_begin_prog(1);
 	delay_50us(20);//10);
 	datarec= p16c_read_data_nvm(0);//SendCommand_344(READ_DATA_PROG_MEM_344,0);
 	if(datateste!=datarec)
@@ -845,14 +741,30 @@ void ProgConfigMem344_1(void)
     
     isp_inc_pointer();
 	//SendCommand_344(INCREMENT_ADDRESS_344,0);			// incrementa PC > 0x800A
-	datateste=(unsigned int)DataHex[7];					/****** ????? ******/
-	datateste=((datateste<<8)|(unsigned int)DataHex[6]);/****** ????? ******/
+	datateste=0x1f;(unsigned int)DataHex[7];					/****** ????? ******/
+	datateste=((datateste<<8)|0xff);/****** ????? ******///((datateste<<8)|(unsigned int)DataHex[6]);
 	datateste=datateste&0x3fff;
 	////datateste=datateste|0x08fc; britto 10022022
     p16c_load_nvm (0 , datateste);
 	//SendCommand_344(LOAD_DATA_PROG_MEM_344,datateste);	// segunda word
 	//SendCommand_344(BEGIN_PROGRAMMING_344,0);			// grava word de configuração 2
-    p16c_begin_prog(0);
+    p16c_begin_prog(1);
+	delay_50us(20);//10);
+	datarec= p16c_read_data_nvm(0);//SendCommand_344(READ_DATA_PROG_MEM_344,0);
+    if(datateste!=datarec)
+		StatusGr=0xf4;	
+    
+    
+     isp_inc_pointer();
+	//SendCommand_344(INCREMENT_ADDRESS_344,0);			// incrementa PC > 0x8009
+	datateste=(unsigned int)DataHex[9];					/****** ????? ******/
+	datateste=((datateste<<8)|(unsigned int)DataHex[8]);/****** ????? ******/
+	datateste=datateste&0x3fff;
+	////datateste=datateste|0x08fc;
+    p16c_load_nvm (0 , datateste);
+	//SendCommand_344(LOAD_DATA_PROG_MEM_344,datateste);	// segunda word
+	//SendCommand_344(BEGIN_PROGRAMMING_344,0);			// grava word de configuração 2
+    p16c_begin_prog(1);
 	delay_50us(20);//10);
 	datarec= p16c_read_data_nvm(0);//SendCommand_344(READ_DATA_PROG_MEM_344,0);
 	if(datateste!=datarec)
@@ -916,7 +828,7 @@ void grava_pic16f15344(void)
 	unsigned char ret=0;
     unsigned int teste_data;
     
-    unsigned char i=0,a,b,c,d,ee,ff,gg,hh,AddrExtend=0;
+    unsigned char i=0,a,b,c,d,ee,ff,gg,hh,ii,jj,AddrExtend=0;
 	volatile unsigned int testex=0;
 	
     
@@ -956,7 +868,9 @@ void grava_pic16f15344(void)
     EnterProgMode344_xx();
     
  
-    //data_rec = p16c_get_ID();
+//    data_rec = p16c_get_ID();
+//    p16c_set_pc(0x8007);
+//    data_rec = p16c_read_data_nvm(1);
  
     p16c_bulk_erase();
     
@@ -976,45 +890,56 @@ void grava_pic16f15344(void)
     
 
     StatusGr=0xf4;
+    
 
-    IEC0bits.T1IE=0;
-////teste escrita na flash do target    
-    uint16_t p = 0;
-    uint8_t size=10;
-    uint16_t dado[10]={0x0001,0x0002,0x0003,0x0004,0x0005,0x0006,0x0007,0x0008,0x0009,0x000a};
-    
-    p16c_set_pc(0x0000);
- ////  p16c_isp_write_pgm(dado,p,10);
-    for(p=0;p<size;p++)
-    {
-        p16c_load_nvm(1,dado[p]); 
-      //  isp_inc_pointer(); 
-    }
-   
-    p16c_set_pc(0x0000);
-    p16c_begin_prog(0);
-    
-   
-//    delay_50us(100);
+//////teste escrita na flash do target    
+//    uint8_t p = 0;
+//    uint8_t size=64;
+//    uint16_t dado[64]={0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xa,0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xa,0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xa, 0x0b,0x0c,0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xa,0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xa,0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xa, 0x0b,0x0c};
+//   
 //    p16c_set_pc(0x0000);
-//    for(addr=0;addr<=size;addr++)
-//			{
-//			p16c_isp_read_pgm (&teste_data, addr, 1);
-//            if(teste_data!=0x0000)
-//            {
-//                StatusGr=0xf1;			// Erro no apagamento
-//				return(1);//1
-//            }
-//	}
-    
-    ExitProgMode344_1();
-	delay_50us(10);
-	VDD_GR=false;
-    
-    while(1);//////////
+//////   p16c_isp_write_pgm(dado,p,size);
+//    for(p=0;p<size;p++)
+//    {
+//      //  isp_inc_pointer();
+//        p16c_load_nvm(1,dado[p]); 
+//        
+//    }
+//    p16c_set_pc(0x0040);
+//        for(p=0;p<size;p++)
+//    {
+//      //  isp_inc_pointer();
+//        p16c_load_nvm(1,dado[p]); 
+//        
+//    }
+////     p16c_load_nvm(1,dado[1]); 
+////     
+////     p16c_load_nvm(1,dado[2]); 
+////     
+////     p16c_load_nvm(1,dado[3]);
+//     ////p16c_set_pc(0x0000);
+//     p16c_begin_prog(0);
+//    
+//  // delay_50us(100);
+////    p16c_set_pc(0x0000);
+////    for(addr=0;addr<=128;addr++)
+////			{
+////			p16c_isp_read_pgm (&teste_data, addr, 1);
+////            if(teste_data!=0x0000)
+////            {
+////                StatusGr=0xf1;		
+////			////	return(1);//1
+////            }
+////	}
+//    
+//    ExitProgMode344_1();
+//	delay_50us(10);
+//	VDD_GR=false;
+//    
+//    while(1);//////////
     		
        //// SendCommand_344(LOAD_PC_344,0);
-    if(!ret)
+     if(!ret)
 	{
         p16c_set_pc(0x0000);
 		Endereco=EnderecoBase;
@@ -1051,7 +976,8 @@ void grava_pic16f15344(void)
 					{
 						MontaProg344_1();
 					}
-					else if(RecordType==0x04&&!AddrExtend)
+					else 
+                        if(RecordType==0x04&&!AddrExtend)
 					{
 						if(!Programado)
 						{
@@ -1064,11 +990,8 @@ void grava_pic16f15344(void)
 						}
 						AddrExtend=DataHex[1];
 					}
-					else
-                        if(AddrExtend && RecordType==0x00&&Address>=0xe000&&Address<=0xe1ff) 	
-                        {
-                            ProgData344_1();
-                        }
+					else 
+                        if(AddrExtend && RecordType==0x00&&Address>=0xe000&&Address<=0xe1ff) 		ProgData344_1();
 					else 
                         if(AddrExtend&&RecordType==0x00&&Address==0x000e)
 					{
@@ -1078,29 +1001,33 @@ void grava_pic16f15344(void)
 						b=DataHex[1];
 						c=DataHex[2];
 						d=DataHex[3];
-                        ee=DataHex[4];
-						ff=DataHex[5];
-						gg=DataHex[6];
-						hh=DataHex[7];
-					   ret=VerifyProgMem344_1();
+                        ee = DataHex[4];
+                        ff = DataHex[5];
+                        gg = DataHex[6];
+                        hh = DataHex[7];
+                        ii = DataHex[8];
+                        jj = DataHex[9];
+					   ret=0;//VerifyProgMem344_1();
 						if(!ret&&!AbortaGr)
 							{
 							DataHex[0]=a;
 							DataHex[1]=b;
 							DataHex[2]=c;
 							DataHex[3]=d;
-                            DataHex[4]=ee;
-							DataHex[5]=ff;
-							DataHex[6]=gg;
-							DataHex[7]=hh;
+                            ee = DataHex[4];
+                            ff = DataHex[5];
+                            gg = DataHex[6];
+                            hh = DataHex[7];
+                            ii = DataHex[8];
+                            jj = DataHex[9];
 							ProgConfigMem344_1();
 							}
 						ExitProgMode344_1();
 						delay_50us(10);
 						VDD_GR=false;
 						ret=1;
-					}
 				}
+                }
 			}
 		}while(RecordType!=0x01&&!ret&&!AbortaGr);
     }
