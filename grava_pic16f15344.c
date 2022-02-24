@@ -579,7 +579,8 @@ void ProgWord344_1(void)
 	unsigned char wordCount,BlockCount=64;
 	unsigned int indice=0,maxdata;
     ////uint16_t seta_pc=0;
-    
+    if(adapt_224==1)
+    {
     PGC=false;
 	PGD=false;
 	if(SetVdd3v)
@@ -593,7 +594,7 @@ void ProgWord344_1(void)
 	delay_50us(500);	//400);
 	
     EnterProgMode344_xx();
-    
+    }
     
     
     
@@ -638,10 +639,12 @@ void ProgWord344_1(void)
 		//SendCommand_344(INCREMENT_ADDRESS_344,0);						// incrementa PC
 		BlockCount--;
 	}
-    
+    if(adapt_224==1)
+    {
     ExitProgMode344_1();
 	delay_50us(10);
 	VDD_GR=false;
+    }
 }
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -651,7 +654,8 @@ unsigned char VerifyProgMem344_1(void)
 	unsigned char i=0,ix=0;
 	volatile unsigned int datateste, AddrFinal, datarec;
     
-    
+    if(adapt_224==1)
+    {
     PGC=false;
 	PGD=false;
 	if(SetVdd3v)
@@ -666,7 +670,7 @@ unsigned char VerifyProgMem344_1(void)
 	
     EnterProgMode344_xx();
     
-    
+    }
 
 	StatusGr=0x03;			// Verificando gravação
 
@@ -733,6 +737,12 @@ unsigned char VerifyProgMem344_1(void)
 			}
 		}while(Endereco16F<AddrFinal);
         
+    if(adapt_224==1)
+    {
+    ExitProgMode344_1();
+	delay_50us(10);
+	VDD_GR=false;
+    }
 //    ExitProgMode344_1();
 //	delay_50us(10);
 //	VDD_GR=false;
@@ -744,20 +754,22 @@ void ProgConfigMem344_1(void)
 {
 	volatile unsigned int datateste, datarec;
     
-    
-//    PGC=false;
-//	PGD=false;
-//	if(SetVdd3v)
-//		Vdd_3V();		//Seta alimentação para 5V
-//	if(SetVdd5v)
-//		Vdd_5V();		//Seta alimentação para 5V
-//	Vpp_9V();			//seta VPP para 9V
-//	PGD_DIR=true;		//output
-//	Vpp_GND_OFF();		//desconecta VPP de GND
-//	VDD_GR=ON;			//liga alimentação
-//	delay_50us(500);	//400);
-//	
-//    EnterProgMode344_xx();
+     if(adapt_224==1)
+     {
+    PGC=false;
+	PGD=false;
+	if(SetVdd3v)
+		Vdd_3V();		//Seta alimentação para 5V
+	if(SetVdd5v)
+		Vdd_5V();		//Seta alimentação para 5V
+	Vpp_9V();			//seta VPP para 9V
+	PGD_DIR=true;		//output
+	Vpp_GND_OFF();		//desconecta VPP de GND
+	VDD_GR=ON;			//liga alimentação
+	delay_50us(500);	//400);
+	
+    EnterProgMode344_xx();
+     }
 	//// britto SendCommand(LOAD_CONFIGURATION,0);			// PC > 0x8000
 
     p16c_set_pc(0x8007);
@@ -840,10 +852,12 @@ void ProgConfigMem344_1(void)
     else {
         StatusGr=0x04;
         }
-    
+    if(adapt_224==1)
+    {
     ExitProgMode344_1();
 	delay_50us(10);
 	VDD_GR=false;
+    }
 }
 ////////////////////////////////////////////////////////////////////////////////
 void ProgData344_1(void)
@@ -852,6 +866,24 @@ void ProgData344_1(void)
 	addr=(Address&0x0fff)/2;
 	unsigned char i=0;
 		
+    if(adapt_224==1)
+    {
+    PGC=false;
+	PGD=false;
+	if(SetVdd3v)
+		Vdd_3V();		//Seta alimentação para 5V
+	if(SetVdd5v)
+		Vdd_5V();		//Seta alimentação para 5V
+	Vpp_9V();			//seta VPP para 9V
+	PGD_DIR=true;		//output
+	Vpp_GND_OFF();		//desconecta VPP de GND
+	VDD_GR=ON;			//liga alimentação
+	delay_50us(500);	//400);
+	
+    EnterProgMode344_xx();
+    
+    }
+    
 	while(ByteCount) 
 	{
 		datateste=(unsigned int)DataHex[i+1];
@@ -872,6 +904,12 @@ void ProgData344_1(void)
 //		//SendCommand_344(INCREMENT_ADDRESS_344,0);					// incrementa PC
         isp_inc_pointer();
 	}
+    if(adapt_224==1)
+    {
+    ExitProgMode344_1();
+	delay_50us(10);
+	VDD_GR=false;
+    }
 }
 ////////////////////////////////////////////////////////////////////////////////
 void ExitProgMode344_1(void) 
@@ -941,27 +979,11 @@ void grava_pic16f15344(void)
 //    p16c_set_pc(0x8007);
 //    data_rec = p16c_read_data_nvm(1);
     
-     p16c_set_pc(0x0000);
-     p16c_bulk_erase();
-     
-     
-//    
-//   //// p16c_isp_read_pgm (&data_rec, 0x10, 1);
-//    		for(addr=0;addr<=MaxMemory;addr++)
-//			{
-//			//p16c_isp_read_pgm (&data_rec, 0, 1);
-//            p16c_isp_read_pgm (&data_rec, addr, 1);
-//	
-//            if(data_rec!=0x3fff)
-//				{
-//				StatusGr=0xf1;			// Erro no apagamento
-//				return(1);//1
-//				}
-//			
-//			}
+ 
     
 
-    
+     if(adapt_224==1)
+     {
     
     delay_50us(1000);
     
@@ -978,15 +1000,36 @@ void grava_pic16f15344(void)
     
     p16c_set_pc(0xe800);
     p16c_bulk_erase();
+     }
     
+     p16c_set_pc(0x0000);
+     p16c_bulk_erase();
+     
+     
+  
+   //// p16c_isp_read_pgm (&data_rec, 0x10, 1);
+    		for(addr=0;addr<=MaxMemory;addr++)
+			{
+			//p16c_isp_read_pgm (&data_rec, 0, 1);
+            p16c_isp_read_pgm (&data_rec, addr, 1);
+	
+            if(data_rec!=0x3fff)
+				{
+				StatusGr=0xf1;			// Erro no apagamento
+				return(1);//1
+				}
+			
+			}
     
     StatusGr=0xf4;
     delay_50us(1000);
     
+    if(adapt_224==1)
+    {
     ExitProgMode344_1();
 	delay_50us(10);
 	VDD_GR=false;
-    
+    }
 ////////teste escrita na flash do target    
 //    uint32_t p = 0x0000;
 //    uint8_t size=64;
