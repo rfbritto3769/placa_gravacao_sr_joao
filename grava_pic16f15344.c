@@ -579,13 +579,33 @@ void ProgWord344_1(void)
 	unsigned char wordCount,BlockCount=64;
 	unsigned int indice=0,maxdata;
     ////uint16_t seta_pc=0;
+    
+    PGC=false;
+	PGD=false;
+	if(SetVdd3v)
+		Vdd_3V();		//Seta alimentação para 5V
+	if(SetVdd5v)
+		Vdd_5V();		//Seta alimentação para 5V
+	Vpp_9V();			//seta VPP para 9V
+	PGD_DIR=true;		//output
+	Vpp_GND_OFF();		//desconecta VPP de GND
+	VDD_GR=ON;			//liga alimentação
+	delay_50us(500);	//400);
+	
+    EnterProgMode344_xx();
+    
+    
+    
+    
+    
 	Programado=true;
     p16c_set_pc(0x0000);//
+     
     delay_50us(40);
 	maxdata=AddrProg-1;
 	if(maxdata>0x7ff)
 		maxdata=maxdata-0x7ff;
-	while((indice<=maxdata)&&BlockCount)
+	while((indice<=maxdata)&&BlockCount)  
 	{
 		wordCount=32;//32
 		while(wordCount)
@@ -608,18 +628,45 @@ void ProgWord344_1(void)
 		}
 		//SendCommand_344(BEGIN_PROGRAMMING_344,0);						// grava as trinta e duas words
        ///// p16c_set_pc(seta_pc);
+      ////  p16c_set_pc(0x0000);//
         p16c_begin_prog(0);
+      
         ////seta_pc=seta_pc+32;
         isp_inc_pointer();
+        
+        ////delay_50us(1000);
 		//SendCommand_344(INCREMENT_ADDRESS_344,0);						// incrementa PC
 		BlockCount--;
 	}
+    
+    ExitProgMode344_1();
+	delay_50us(10);
+	VDD_GR=false;
 }
+////////////////////////////////////////////////////////////////////////////////
+
 ////////////////////////////////////////////////////////////////////////////////
 unsigned char VerifyProgMem344_1(void)
 	{
 	unsigned char i=0,ix=0;
 	volatile unsigned int datateste, AddrFinal, datarec;
+    
+    
+    PGC=false;
+	PGD=false;
+	if(SetVdd3v)
+		Vdd_3V();		//Seta alimentação para 5V
+	if(SetVdd5v)
+		Vdd_5V();		//Seta alimentação para 5V
+	Vpp_9V();			//seta VPP para 9V
+	PGD_DIR=true;		//output
+	Vpp_GND_OFF();		//desconecta VPP de GND
+	VDD_GR=ON;			//liga alimentação
+	delay_50us(500);	//400);
+	
+    EnterProgMode344_xx();
+    
+    
 
 	StatusGr=0x03;			// Verificando gravação
 
@@ -685,12 +732,32 @@ unsigned char VerifyProgMem344_1(void)
 				}
 			}
 		}while(Endereco16F<AddrFinal);
+        
+//    ExitProgMode344_1();
+//	delay_50us(10);
+//	VDD_GR=false;
+    
 	return 0;
 	}
 ////////////////////////////////////////////////////////////////////////////////
 void ProgConfigMem344_1(void)
 {
 	volatile unsigned int datateste, datarec;
+    
+    
+//    PGC=false;
+//	PGD=false;
+//	if(SetVdd3v)
+//		Vdd_3V();		//Seta alimentação para 5V
+//	if(SetVdd5v)
+//		Vdd_5V();		//Seta alimentação para 5V
+//	Vpp_9V();			//seta VPP para 9V
+//	PGD_DIR=true;		//output
+//	Vpp_GND_OFF();		//desconecta VPP de GND
+//	VDD_GR=ON;			//liga alimentação
+//	delay_50us(500);	//400);
+//	
+//    EnterProgMode344_xx();
 	//// britto SendCommand(LOAD_CONFIGURATION,0);			// PC > 0x8000
 
     p16c_set_pc(0x8007);
@@ -757,8 +824,8 @@ void ProgConfigMem344_1(void)
     
      isp_inc_pointer();
 	//SendCommand_344(INCREMENT_ADDRESS_344,0);			// incrementa PC > 0x8009
-	datateste=(unsigned int)DataHex[9];					/****** ????? ******/
-	datateste=((datateste<<8)|(unsigned int)DataHex[8]);/****** ????? ******/
+	datateste=0xff;					/****** ????? ******/
+	datateste=((datateste<<8)|0xff);/****** ????? ******/
 	datateste=datateste&0x3fff;
 	////datateste=datateste|0x08fc;
     p16c_load_nvm (0 , datateste);
@@ -774,7 +841,9 @@ void ProgConfigMem344_1(void)
         StatusGr=0x04;
         }
     
-   
+    ExitProgMode344_1();
+	delay_50us(10);
+	VDD_GR=false;
 }
 ////////////////////////////////////////////////////////////////////////////////
 void ProgData344_1(void)
@@ -871,66 +940,83 @@ void grava_pic16f15344(void)
 //    data_rec = p16c_get_ID();
 //    p16c_set_pc(0x8007);
 //    data_rec = p16c_read_data_nvm(1);
- 
+    
+     p16c_set_pc(0x0000);
+     p16c_bulk_erase();
+     
+     
+//    
+//   //// p16c_isp_read_pgm (&data_rec, 0x10, 1);
+//    		for(addr=0;addr<=MaxMemory;addr++)
+//			{
+//			//p16c_isp_read_pgm (&data_rec, 0, 1);
+//            p16c_isp_read_pgm (&data_rec, addr, 1);
+//	
+//            if(data_rec!=0x3fff)
+//				{
+//				StatusGr=0xf1;			// Erro no apagamento
+//				return(1);//1
+//				}
+//			
+//			}
+    
+
+    
+    
+    delay_50us(1000);
+    
+    p16c_set_pc(0x8000);
     p16c_bulk_erase();
     
-   //// p16c_isp_read_pgm (&data_rec, 0x10, 1);
-    		for(addr=0;addr<=MaxMemory;addr++)
-			{
-			//p16c_isp_read_pgm (&data_rec, 0, 1);
-            p16c_isp_read_pgm (&data_rec, addr, 1);
-	
-            if(data_rec!=0x3fff)
-				{
-				StatusGr=0xf1;			// Erro no apagamento
-				return(1);//1
-				}
-			
-			}
     
-
+    delay_50us(1000);
+    
+    p16c_set_pc(0x80fe);
+    p16c_bulk_erase();
+    
+    delay_50us(1000);
+    
+    p16c_set_pc(0xe800);
+    p16c_bulk_erase();
+    
+    
     StatusGr=0xf4;
+    delay_50us(1000);
     
-
-//////teste escrita na flash do target    
-//    uint8_t p = 0;
+    ExitProgMode344_1();
+	delay_50us(10);
+	VDD_GR=false;
+    
+////////teste escrita na flash do target    
+//    uint32_t p = 0x0000;
 //    uint8_t size=64;
-//    uint16_t dado[64]={0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xa,0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xa,0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xa, 0x0b,0x0c,0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xa,0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xa,0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xa, 0x0b,0x0c};
+//    unsigned int dado1 = 0x1111;
+//    unsigned int dado[64]={0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xa,0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xa,0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xa,0x0b,0x0c,0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xa,0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xa,0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xa,0x0b,0x0c};
 //   
 //    p16c_set_pc(0x0000);
-//////   p16c_isp_write_pgm(dado,p,size);
-//    for(p=0;p<size;p++)
+//  //  p16c_isp_write_pgm(dado,p,size);
+//    for(p=0;p<=size;p++)
 //    {
 //      //  isp_inc_pointer();
-//        p16c_load_nvm(1,dado[p]); 
-//        
+//       
+//        p16c_load_nvm(1,dado1); 
+//         
 //    }
-//    p16c_set_pc(0x0040);
-//        for(p=0;p<size;p++)
-//    {
-//      //  isp_inc_pointer();
-//        p16c_load_nvm(1,dado[p]); 
-//        
-//    }
-////     p16c_load_nvm(1,dado[1]); 
-////     
-////     p16c_load_nvm(1,dado[2]); 
-////     
-////     p16c_load_nvm(1,dado[3]);
-//     ////p16c_set_pc(0x0000);
+//
+//     p16c_set_pc(0x0000);
 //     p16c_begin_prog(0);
 //    
-//  // delay_50us(100);
-////    p16c_set_pc(0x0000);
-////    for(addr=0;addr<=128;addr++)
-////			{
-////			p16c_isp_read_pgm (&teste_data, addr, 1);
-////            if(teste_data!=0x0000)
-////            {
-////                StatusGr=0xf1;		
-////			////	return(1);//1
-////            }
-////	}
+//   delay_50us(100);
+//    p16c_set_pc(0x0000);
+//    for(addr=0;addr<=size;addr++)
+//			{
+//			p16c_isp_read_pgm (&teste_data, addr, 1);
+//            if(teste_data!=0x0000)
+//            {
+//                StatusGr=0xf1;		
+//			////	return(1);//1
+//            }
+//	}
 //    
 //    ExitProgMode344_1();
 //	delay_50us(10);
@@ -941,7 +1027,7 @@ void grava_pic16f15344(void)
        //// SendCommand_344(LOAD_PC_344,0);
      if(!ret)
 	{
-        p16c_set_pc(0x0000);
+       ///////// p16c_set_pc(0x0000);
 		Endereco=EnderecoBase;
 		StatusGr=0x02;			// Gravação em andamento
 		RecordType = 0;
@@ -1007,7 +1093,7 @@ void grava_pic16f15344(void)
                         hh = DataHex[7];
                         ii = DataHex[8];
                         jj = DataHex[9];
-					   ret=0;//VerifyProgMem344_1();
+					   ret=VerifyProgMem344_1();
 						if(!ret&&!AbortaGr)
 							{
 							DataHex[0]=a;
